@@ -16,7 +16,7 @@ data:
   # Project: https://github.com/kubernetes/ingress-nginx
   WEBSOCKET_ENABLED: 'true'
   DATA_FOLDER: '/data'
-  DOMAIN: 'https://bitwarden.domain.tld'
+  DOMAIN: 'https://bitwarden.phl.io'
   ROCKET_WORKERS: '10'
   SHOW_PASSWORD_HINT: 'false'
   WEB_VAULT_ENABLED: 'true'
@@ -49,10 +49,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - bitwarden.domain.tld
+    - bitwarden.phl.io
     secretName: tls-secret
   rules:
-  - host: bitwarden.domain.tld
+  - host: bitwarden.phl.io
     http:
       paths:
       - path: /
