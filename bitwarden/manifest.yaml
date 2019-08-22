@@ -8,8 +8,8 @@ metadata:
   labels:
     app: bitwarden
 data:
-  SMTP_HOST: 'smtp.domain.tld'
-  SMTP_FROM: 'user@smtp.domain.tld'
+  SMTP_HOST: 'smtp.mailgun.org'
+  SMTP_FROM: 'bitwarden@phl.io'
   SMTP_PORT: '587'
   SMTP_SSL: 'true'
   # nginx-ingress-controller has built in support for Websockets
@@ -147,8 +147,8 @@ metadata:
     app: bitwarden
 type: Opaque
 data:
-  emailUser: <BASE64_ENCODED_USERNAME>
-  emailPassword: <BASE64_ENCODED_PASSWORD>
+  emailUser: Yml0d2FyZGVuQHBobC5pbw==
+  emailPassword: NzM0MzE2NTM1M2FlNWYzOTA4MDVlZDE1ZWE5NjI5ZTEtMmFlMmM2ZjMtMDA2NDlkMzA=
 
 ---
 # Source: https://github.com/icicimov/kubernetes-bitwarden_rs/blob/master/statefulset.yml
