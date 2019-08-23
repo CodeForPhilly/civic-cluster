@@ -1,0 +1,235 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bitwarden
+
+---
+# Source: https://github.com/icicimov/kubernetes-bitwarden_rs/blob/master/configmap.yml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bitwarden
+  namespace: bitwarden
+  labels:
+    app: bitwarden
+data:
+  SMTP_HOST: 'smtp.mailgun.org'
+  SMTP_FROM: 'bitwarden@phl.io'
+  SMTP_PORT: '587'
+  SMTP_SSL: 'true'
+  # nginx-ingress-controller has built in support for Websockets
+  # Project: https://github.com/kubernetes/ingress-nginx
+  WEBSOCKET_ENABLED: 'true'
+  DATA_FOLDER: '/data'
+  DOMAIN: 'https://bitwarden.phl.io'
+  ROCKET_WORKERS: '10'
+  SHOW_PASSWORD_HINT: 'false'
+  WEB_VAULT_ENABLED: 'true'
+  ROCKET_PORT: '8080'
+
+---
+# Source: https://github.com/icicimov/kubernetes-bitwarden_rs/blob/master/ingress.yml
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: bitwarden
+  namespace: bitwarden
+  labels:
+    app: bitwarden
+  annotations:
+    # the name of the nginx-ingress-controller class
+    kubernetes.io/ingress.class: nginx-ingress-external
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Request-Id: $req_id";
+    nginx.ingress.kubernetes.io/connection-proxy-header: "keep-alive"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/limit-connections: "25"
+    nginx.ingress.kubernetes.io/limit-rps: "15"
+    nginx.ingress.kubernetes.io/proxy-body-size: 1024m
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "10"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - bitwarden.phl.io
+    secretName: tls-secret
+  rules:
+  - host: bitwarden.phl.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: bitwarden
+          servicePort: 80
+      - path: /notifications/hub
+        backend:
+          serviceName: bitwarden
+          servicePort: 3012
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bitwarden
+  labels:
+    app: bitwarden
+
+---
+# Source: https://github.com/icicimov/kubernetes-bitwarden_rs/blob/master/rbac.yml
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: bitwarden
+  namespace: bitwarden
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    resourceNames:
+      - "bitwarden"
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    resourceNames:
+      - "bitwarden-smtp"
+      - "bitwarden-tls"
+    verbs:
+      - get
+
+---
+# Source: https://github.com/icicimov/kubernetes-bitwarden_rs/blob/master/rbac.yml
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: bitwarden
+  namespace: bitwarden
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: bitwarden
+subjects:
+- kind: ServiceAccount
+  name: bitwarden
+
+---
+# Source: https://github.com/icicimov/kubernetes-bitwarden_rs/blob/master/service.yml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitwarden
+  namespace: bitwarden
+  labels:
+    app: bitwarden
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  - name: websocket
+    protocol: TCP
+    port: 3012
+    targetPort: 3012
+  type: ClusterIP
+  selector:
+    app: bitwarden
+
+---
+# Source: https://github.com/icicimov/kubernetes-bitwarden_rs/blob/master/smtp-secret.yml
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitwarden-smtp
+  namespace: bitwarden
+  labels:
+    app: bitwarden
+type: Opaque
+data:
+  emailUser: Yml0d2FyZGVuQHBobC5pbw==
+  emailPassword: NzM0MzE2NTM1M2FlNWYzOTA4MDVlZDE1ZWE5NjI5ZTEtMmFlMmM2ZjMtMDA2NDlkMzA=
+
+---
+# Source: https://github.com/icicimov/kubernetes-bitwarden_rs/blob/master/statefulset.yml
+
+apiVersion: "apps/v1beta1"
+kind: StatefulSet
+metadata:
+  name: bitwarden
+  namespace: bitwarden
+  labels:
+    app: bitwarden
+spec:
+  serviceName: bitwarden
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bitwarden
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: bitwarden
+    spec:
+      serviceAccountName: bitwarden
+      securityContext:
+        fsGroup: 33
+        runAsUser: 33
+      containers:
+      - image: mprasil/bitwarden:latest
+        imagePullPolicy: IfNotPresent
+        name: bitwarden
+        envFrom:
+        - configMapRef:
+            name: bitwarden
+        env:
+        - name: SMTP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: bitwarden-smtp
+              key: emailUser
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bitwarden-smtp
+              key: emailPassword
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 3012
+          name: websocket
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        resources:
+          limits:
+            cpu: 300m
+            memory: 1Gi
+          requests:
+            cpu: 50m
+            memory: 256Mi
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+        - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: "15Gi"
+      storageClassName: default
