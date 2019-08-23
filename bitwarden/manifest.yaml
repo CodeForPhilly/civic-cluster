@@ -40,7 +40,6 @@ metadata:
     app: bitwarden
   annotations:
     # the name of the nginx-ingress-controller class
-    kubernetes.io/ingress.class: nginx-ingress-external
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "Request-Id: $req_id";
     nginx.ingress.kubernetes.io/connection-proxy-header: "keep-alive"
