@@ -71,7 +71,7 @@ spec:
           serviceName: bitwarden
           servicePort: 3012
 
-          ---
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
