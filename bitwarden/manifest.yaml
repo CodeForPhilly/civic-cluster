@@ -39,7 +39,7 @@ metadata:
   labels:
     app: bitwarden
   annotations:
-    # the name of the nginx-ingress-controller class
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "Request-Id: $req_id";
     nginx.ingress.kubernetes.io/connection-proxy-header: "keep-alive"
