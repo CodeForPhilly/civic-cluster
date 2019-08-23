@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bitwarden
+
 ---
 # Source: https://github.com/icicimov/kubernetes-bitwarden_rs/blob/master/configmap.yml
 
@@ -5,6 +10,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: bitwarden
+  namespace: bitwarden
   labels:
     app: bitwarden
 data:
@@ -29,6 +35,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: bitwarden
+  namespace: bitwarden
   labels:
     app: bitwarden
   annotations:
@@ -79,6 +86,7 @@ apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: Role
 metadata:
   name: bitwarden
+  namespace: bitwarden
 rules:
   - apiGroups:
       - ""
@@ -105,6 +113,7 @@ apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
 metadata:
   name: bitwarden
+  namespace: bitwarden
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -120,6 +129,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: bitwarden
+  namespace: bitwarden
   labels:
     app: bitwarden
 spec:
@@ -143,6 +153,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: bitwarden-smtp
+  namespace: bitwarden
   labels:
     app: bitwarden
 type: Opaque
@@ -157,6 +168,7 @@ apiVersion: "apps/v1beta1"
 kind: StatefulSet
 metadata:
   name: bitwarden
+  namespace: bitwarden
   labels:
     app: bitwarden
 spec:
