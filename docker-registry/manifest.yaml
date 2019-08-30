@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: docker-registry
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: docker-registry-data
+  namespace: docker-registry
+  labels:
+    app: docker-registry
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docker-registry-htpasswd
+  namespace: docker-registry
+data:
+  htpasswd: |
+    admin:$2y$05$HlgsFLWa8LVfv5rMHPv2ouK1P7xnSsgtQluu6oFYaZquZ8r.Jc452
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: docker-registry
+  namespace: docker-registry
+  labels:
+    app: docker-registry
+spec:
+  serviceName: docker-registry
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docker-registry
+  template:
+    metadata:
+      labels:
+        app: docker-registry
+    spec:
+      containers:
+      - image: registry:2
+        name: docker-registry
+        ports:
+        - containerPort: 5000
+          name: registry
+        volumeMounts:
+        - name: docker-registry-data
+          mountPath: /var/lib/registry
+        - name: docker-registry-htpasswd
+          mountPath: /htpasswd
+          subPath: htpasswd
+        env:
+        - name: REGISTRY_AUTH
+          value: "htpasswd"
+        - name: REGISTRY_AUTH_HTPASSWD_REALM
+          value: "registry.phl.io"
+        - name: REGISTRY_AUTH_HTPASSWD_PATH
+          value: /htpasswd
+      volumes:
+      - name: docker-registry-data
+        persistentVolumeClaim:
+          claimName: docker-registry-data
+      - name: docker-registry-htpasswd
+        configMap:
+          name: docker-registry-htpasswd
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry
+  namespace: docker-registry
+  labels:
+    app: docker-registry
+spec:
+  type: NodePort
+  selector:
+    app: docker-registry
+  ports:
+    - port: 5000
+      name: docker-registry
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: docker-registry
+  namespace: docker-registry
+  labels:
+    app: docker-registry
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  tls:
+  - hosts:
+    - registry.beta-cluster.phl.io
+    secretName: tls-secret
+  rules:
+  - host: registry.beta-cluster.phl.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: docker-registry
+          servicePort: 5000
