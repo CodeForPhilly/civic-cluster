@@ -89,8 +89,10 @@ spec:
   selector:
     app: docker-registry
   ports:
-    - port: 5000
-      name: docker-registry
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 5000
 
 ---
 
