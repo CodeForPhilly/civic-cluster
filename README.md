@@ -31,4 +31,4 @@ spec:
           servicePort: 80
 ```
 
-For an example, see [`bitwarden/manifest.yaml`](./bitwarden/manifest.yaml)
+For an example, see [`platform/bitwarden/manifest.yaml`](./platform/bitwarden/manifest.yaml)
