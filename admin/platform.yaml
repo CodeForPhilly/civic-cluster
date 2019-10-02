@@ -8,4 +8,4 @@
       block:
         - name: deploy component
           k8s:
-            src: "{{ platform_cfg_dir }}/{{ inventory_hostname }}/manifest.yaml"
+            src: "{{ platform_cfg_dir }}/{{ inventory_hostname }}.yaml"
