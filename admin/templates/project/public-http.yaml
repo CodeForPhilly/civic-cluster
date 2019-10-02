@@ -1,0 +1,75 @@
+#!jinja2: lstrip_blocks: True
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: public-app
+  namespace: {{ inventory_hostname }}
+  labels:
+    app: {{ inventory_hostname }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ inventory_hostname }}
+  template:
+    metadata:
+      labels:
+        app: {{ inventory_hostname }}
+    spec:
+      containers:
+      - image: {{ app_image }}
+        name: {{ inventory_hostname }}
+        ports:
+        - containerPort: {{ app_port }}
+          name: http
+          protocol: TCP
+      imagePullSecrets:
+      - name: regcred
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: public-app
+  namespace: {{ inventory_hostname }}
+  labels:
+    app: {{ inventory_hostname }}
+spec:
+  selector:
+    app: {{ inventory_hostname }}
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: {{ app_port }}
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: public-app
+  namespace: {{ inventory_hostname }}
+  labels:
+    app: {{ inventory_hostname }}
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  tls:
+  - hosts:
+    - {{ inventory_hostname }}.beta-cluster.phl.io
+    secretName: tls-secret
+  rules:
+  - host: {{ inventory_hostname }}.beta-cluster.phl.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: public-app
+          servicePort: 80

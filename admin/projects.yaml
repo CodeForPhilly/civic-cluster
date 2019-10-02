@@ -1,0 +1,21 @@
+- name: Project Applications
+  hosts: projects
+  gather_facts: false
+  vars:
+    project_cfg: "{{ playbook_dir }}/../projects/{{ inventory_hostname }}.yaml"
+  tasks:
+    - delegate_to: localhost
+      block:
+        - name: load project configuration
+          include_vars:
+            file: "{{ project_cfg }}"
+            name: project
+        - name: bootstrap project
+          k8s:
+            resource_definition: "{{ lookup('template', 'project/init.yaml') }}"
+        - name: deploy project
+          vars:
+            app_image: "{{ project.image }}"
+            app_port: "{{ project.port }}"
+          k8s:
+            resource_definition: "{{ lookup('template', 'project/' ~ project.type ~ '.yaml') }}"

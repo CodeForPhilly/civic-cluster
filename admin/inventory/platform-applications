@@ -1,0 +1,6 @@
+[platform]
+bitwarden
+cert-manager
+docker-registry
+ingress-nginx
+kubernetes-dashboard

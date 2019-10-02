@@ -1,0 +1,11 @@
+- name: Platform Applications
+  hosts: platform
+  gather_facts: false
+  vars:
+    platform_cfg_dir: "{{ playbook_dir }}/../platform"
+  tasks:
+    - delegate_to: localhost
+      block:
+        - name: deploy component
+          k8s:
+            src: "{{ platform_cfg_dir }}/{{ inventory_hostname }}/manifest.yaml"
