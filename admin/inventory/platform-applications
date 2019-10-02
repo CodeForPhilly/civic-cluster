@@ -1,5 +1,0 @@
-[platform]
-cert-manager
-docker-registry
-ingress-nginx
-kubernetes-dashboard

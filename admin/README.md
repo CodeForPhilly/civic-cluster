@@ -50,15 +50,13 @@ ansible-playbook projects.yaml -l phlask
 
 ## Adding a new platform application
 
-1. Create a [platform/${app_name}/manifest.yaml](../platform) definition file
-2. Add the name specified in `${app_name}` to the [inventory/platform-applications](./inventory/platform-applications) list
-3. Deploy the application using either `ansible-playbook platform.yaml` or `ansible-playbook platform.yaml -l ${app_name}`
+1. Create a [platform/${app_name}.yaml](../platform) definition file
+2. Deploy the application using either `ansible-playbook platform.yaml` or `ansible-playbook platform.yaml -l ${app_name}`
 
 ## Adding a new project application
 
 1. Create a [projects/${app_name}.yaml](../projects) definition file
-2. Add the name specified in `${app_name}` to the [inventory/project-applications](./inventory/project-applications) list
-3. Deploy the application using either `ansible-playbook projects.yaml` or `ansible-playbook projects.yaml -l ${app_name}`
+2. Deploy the application using either `ansible-playbook projects.yaml` or `ansible-playbook projects.yaml -l ${app_name}`
 
 #### About project applications
 
