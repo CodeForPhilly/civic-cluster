@@ -1,7 +1,7 @@
 #!jinja2: lstrip_blocks: True
 {#
-    REQUIRED PROJECT VARIABLES
-    --------------------------
+    REQUIRED APPLICATION VARIABLES
+    ------------------------------
     image : Docker image path
     port  : Container port which public HTTP service runs on
 #}
@@ -27,10 +27,10 @@ spec:
         app: {{ inventory_hostname }}
     spec:
       containers:
-      - image: {{ project.image }}
+      - image: {{ app.image }}
         name: {{ inventory_hostname }}
         ports:
-        - containerPort: {{ project.port }}
+        - containerPort: {{ app.port }}
           name: http
           protocol: TCP
       imagePullSecrets:
@@ -52,7 +52,7 @@ spec:
   - name: http
     port: 80
     protocol: TCP
-    targetPort: {{ project.port }}
+    targetPort: {{ app.port }}
 
 ---
 

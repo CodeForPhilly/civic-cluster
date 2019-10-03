@@ -2,17 +2,34 @@
   hosts: projects
   gather_facts: false
   vars:
-    project_cfg: "{{ playbook_dir }}/../projects/{{ inventory_hostname }}.yaml"
+    app_cfg: "{{ playbook_dir }}/../projects/{{ inventory_hostname }}.yaml"
+    default_app_state: present
   tasks:
     - delegate_to: localhost
       block:
         - name: load project configuration
           include_vars:
-            file: "{{ project_cfg }}"
-            name: project
-        - name: bootstrap project
+            file: "{{ app_cfg }}"
+            name: app
+
+        - name: get project state
+          set_fact:
+            app_state: "{{ app.state|default(default_app_state) }}"
+
+        - name: remove deleted projects
+          when: app_state == 'absent'
           k8s:
-            resource_definition: "{{ lookup('template', 'project/init.yaml') }}"
-        - name: deploy project
-          k8s:
-            resource_definition: "{{ lookup('template', 'project/' ~ project.type ~ '.yaml') }}"
+            state: absent
+            kind: Namespace
+            name: "{{ inventory_hostname }}"
+            wait: true
+
+        - name: current projects
+          when: app_state != 'absent'
+          block:
+            - name: bootstrap current projects
+              k8s:
+                resource_definition: "{{ lookup('template', 'project/init.yaml') }}"
+            - name: deploy current projects
+              k8s:
+                resource_definition: "{{ lookup('template', 'project/' ~ app.type ~ '.yaml') }}"

@@ -1,11 +1,31 @@
+---
 - name: Platform Applications
   hosts: platform
   gather_facts: false
   vars:
-    platform_cfg_dir: "{{ playbook_dir }}/../platform"
+    app_cfg: "{{ playbook_dir }}/../platform/{{ inventory_hostname }}.yaml"
+    default_app_state: present
   tasks:
     - delegate_to: localhost
       block:
-        - name: deploy component
+        - name: load component configuration
+          include_vars:
+            file: "{{ app_cfg }}"
+            name: app
+
+        - name: get component state
+          set_fact:
+            app_state: "{{ app.state|default(default_app_state) }}"
+
+        - name: remove deleted components
+          when: app_state == 'absent'
           k8s:
-            src: "{{ platform_cfg_dir }}/{{ inventory_hostname }}.yaml"
+            state: absent
+            kind: Namespace
+            name: "{{ inventory_hostname }}"
+            wait: true
+
+        - name: deploy current components
+          when: app_state != 'absent'
+          k8s:
+            resource_definition: "{{ lookup('template', 'platform/' ~ app.type ~ '.yaml') }}"
