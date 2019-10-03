@@ -1,1 +1,1 @@
-type: docker-registry
+kind: docker-registry

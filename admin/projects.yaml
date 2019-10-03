@@ -32,4 +32,4 @@
                 resource_definition: "{{ lookup('template', 'project/init.yaml') }}"
             - name: deploy current projects
               k8s:
-                resource_definition: "{{ lookup('template', 'project/' ~ app.type ~ '.yaml') }}"
+                resource_definition: "{{ lookup('template', 'project/' ~ app.kind ~ '.yaml') }}"

@@ -1,4 +1,4 @@
 ---
-type: public-http
+kind: public-http
 image: registry.beta-cluster.phl.io/phlask:latest
 port: 3000

@@ -28,4 +28,4 @@
         - name: deploy current components
           when: app_state != 'absent'
           k8s:
-            resource_definition: "{{ lookup('template', 'platform/' ~ app.type ~ '.yaml') }}"
+            resource_definition: "{{ lookup('template', 'platform/' ~ app.kind ~ '.yaml') }}"
