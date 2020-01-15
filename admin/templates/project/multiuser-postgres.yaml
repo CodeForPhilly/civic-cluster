@@ -1,0 +1,93 @@
+#!jinja2: lstrip_blocks: True
+{#
+    OPTIONAL APPLICATION VARIABLES
+    ------------------------------
+    expose: boolean; When true, database is publicly acessible.
+    port: int; Required when expose is True. When exposed, public port to expose service on. Otherwise, internal service port.
+    users: sequence; List of user maps for creating DBs and granting privileges. Each item in list has following fields available:
+      db: Name of the DB to grant privileges on. Will be created if does not exist.
+      name: Username to assign privileges to. Will be created if does not exist.
+      privilege: Privilege level to grant user on the db. One of rw, ro, none, or delete.
+      passwd: Password to assign the user. None will be set if not specified.
+#}
+{% if app.users|default([])|length > 0 %}
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-userdata
+  namespace: {{ inventory_hostname }}
+  labels:
+    app: {{ inventory_hostname }}
+type: Opaque
+stringData:
+  init.txt: |
+{% for user in app.users %}
+    {{ user.db|default('') }}:{{ user.name|default('') }}:{{ user.privilege|default('') }}:{{ user.passwd|default('') }}
+{% endfor %}
+{% endif %}
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-server
+  namespace: {{ inventory_hostname }}
+  labels:
+    app: {{ inventory_hostname }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ inventory_hostname }}
+  template:
+    metadata:
+      labels:
+        app: {{ inventory_hostname }}
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - image: codeforphilly/postgres-multiuser:9.6
+        name: server
+        ports:
+        - containerPort: 5432
+          name: postgres
+          protocol: TCP
+{% if app.users|default([])|length > 0 %}
+        volumeMounts:
+        - name: userdata
+          mountPath: /userdata
+          readOnly: true
+      volumes:
+      - name: userdata
+        secret:
+          secretName: postgres-userdata
+{% endif %}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: {{ inventory_hostname }}
+  labels:
+    app: {{ inventory_hostname }}
+spec:
+{% if app.expose|default(False) %}
+  type: NodePort
+{% endif %}
+  selector:
+    app: {{ inventory_hostname }}
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+{% if app.expose|default(False) %}
+    nodePort: {{ app.port|mandatory }}
+{% else %}
+    targetPort: {{ app.port|default(5432) }}
+{% endif %}
