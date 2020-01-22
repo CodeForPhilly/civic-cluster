@@ -115,8 +115,8 @@ spec:
   selector:
     app: {{ inventory_hostname }}
   ports:
-  - name: http
-    port: 80
+  - name: postgresql
+    port: 5432
     protocol: TCP
 {% if app.expose|default(False) %}
     nodePort: {{ app.port|mandatory }}
