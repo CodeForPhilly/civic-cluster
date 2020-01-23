@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: docker-registry
+  name: {{ inventory_hostname }}
 
 ---
 
@@ -9,7 +9,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: docker-registry-data
-  namespace: docker-registry
+  namespace: {{ inventory_hostname }}
   labels:
     app: docker-registry
 spec:
@@ -25,7 +25,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: docker-registry-htpasswd
-  namespace: docker-registry
+  namespace: {{ inventory_hostname }}
 data:
   htpasswd: |
     admin:$2y$05$HlgsFLWa8LVfv5rMHPv2ouK1P7xnSsgtQluu6oFYaZquZ8r.Jc452
@@ -36,7 +36,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: docker-registry
-  namespace: docker-registry
+  namespace: {{ inventory_hostname }}
   labels:
     app: docker-registry
 spec:
@@ -82,7 +82,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: docker-registry
-  namespace: docker-registry
+  namespace: {{ inventory_hostname }}
   labels:
     app: docker-registry
 spec:
@@ -100,7 +100,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: docker-registry
-  namespace: docker-registry
+  namespace: {{ inventory_hostname }}
   labels:
     app: docker-registry
   annotations:

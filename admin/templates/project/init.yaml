@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ inventory_hostname }}
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: regcred
+  namespace: {{ inventory_hostname }}
+data:
+  .dockerconfigjson: ewoJImF1dGhzIjogewoJCSJyZWdpc3RyeS5iZXRhLWNsdXN0ZXIucGhsLmlvIjogewoJCQkiYXV0aCI6ICJZV1J0YVc0NmVtdEtWMjE2T0RSUGJnPT0iCgkJfQoJfSwKCSJIdHRwSGVhZGVycyI6IHsKCQkiVXNlci1BZ2VudCI6ICJEb2NrZXItQ2xpZW50LzE4LjAzLjAtY2UgKGxpbnV4KSIKCX0KfQ==
+type: kubernetes.io/dockerconfigjson

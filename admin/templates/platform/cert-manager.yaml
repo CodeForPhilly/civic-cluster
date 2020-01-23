@@ -7501,18 +7501,17 @@ status:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: cert-manager
+  name: {{ inventory_hostname }}
   labels:
     certmanager.k8s.io/disable-validation: "true"
 
----
 ---
 # Source: cert-manager/charts/cainjector/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cert-manager-cainjector
-  namespace: "cert-manager"
+  namespace: {{ inventory_hostname }}
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
@@ -7526,7 +7525,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cert-manager
-  namespace: "cert-manager"
+  namespace: {{ inventory_hostname }}
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
@@ -7540,7 +7539,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cert-manager-webhook
-  namespace: "cert-manager"
+  namespace: {{ inventory_hostname }}
   labels:
     app: webhook
     app.kubernetes.io/name: webhook
@@ -7595,7 +7594,7 @@ roleRef:
   name: cert-manager-cainjector
 subjects:
   - name: cert-manager-cainjector
-    namespace: "cert-manager"
+    namespace: {{ inventory_hostname }}
     kind: ServiceAccount
 ---
 # Source: cert-manager/templates/rbac.yaml
@@ -7840,7 +7839,7 @@ roleRef:
   name: cert-manager-leaderelection
 subjects:
   - name: cert-manager
-    namespace: "cert-manager"
+    namespace: {{ inventory_hostname }}
     kind: ServiceAccount
 
 ---
@@ -7861,7 +7860,7 @@ roleRef:
   name: cert-manager-controller-issuers
 subjects:
   - name: cert-manager
-    namespace: "cert-manager"
+    namespace: {{ inventory_hostname }}
     kind: ServiceAccount
 
 ---
@@ -7882,7 +7881,7 @@ roleRef:
   name: cert-manager-controller-clusterissuers
 subjects:
   - name: cert-manager
-    namespace: "cert-manager"
+    namespace: {{ inventory_hostname }}
     kind: ServiceAccount
 
 ---
@@ -7903,7 +7902,7 @@ roleRef:
   name: cert-manager-controller-certificates
 subjects:
   - name: cert-manager
-    namespace: "cert-manager"
+    namespace: {{ inventory_hostname }}
     kind: ServiceAccount
 
 ---
@@ -7924,7 +7923,7 @@ roleRef:
   name: cert-manager-controller-orders
 subjects:
   - name: cert-manager
-    namespace: "cert-manager"
+    namespace: {{ inventory_hostname }}
     kind: ServiceAccount
 
 ---
@@ -7945,7 +7944,7 @@ roleRef:
   name: cert-manager-controller-challenges
 subjects:
   - name: cert-manager
-    namespace: "cert-manager"
+    namespace: {{ inventory_hostname }}
     kind: ServiceAccount
 
 ---
@@ -7966,7 +7965,7 @@ roleRef:
   name: cert-manager-controller-ingress-shim
 subjects:
   - name: cert-manager
-    namespace: "cert-manager"
+    namespace: {{ inventory_hostname }}
     kind: ServiceAccount
 
 ---
@@ -8011,7 +8010,6 @@ rules:
 ---
 # Source: cert-manager/templates/webhook-rbac.yaml
 ### Webhook ###
----
 # apiserver gets the auth-delegator role to delegate auth decisions to
 # the core apiserver
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -8032,7 +8030,7 @@ subjects:
 - apiGroup: ""
   kind: ServiceAccount
   name: cert-manager-webhook
-  namespace: cert-manager
+  namespace: {{ inventory_hostname }}
 
 ---
 
@@ -8058,7 +8056,7 @@ subjects:
 - apiGroup: ""
   kind: ServiceAccount
   name: cert-manager-webhook
-  namespace: cert-manager
+  namespace: {{ inventory_hostname }}
 
 ---
 
@@ -8089,7 +8087,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cert-manager
-  namespace: "cert-manager"
+  namespace: {{ inventory_hostname }}
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
@@ -8112,7 +8110,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cert-manager-webhook
-  namespace: "cert-manager"
+  namespace: {{ inventory_hostname }}
   labels:
     app: webhook
     app.kubernetes.io/name: webhook
@@ -8136,7 +8134,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cert-manager-cainjector
-  namespace: "cert-manager"
+  namespace: {{ inventory_hostname }}
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
@@ -8184,7 +8182,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cert-manager
-  namespace: "cert-manager"
+  namespace: {{ inventory_hostname }}
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
@@ -8244,7 +8242,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cert-manager-webhook
-  namespace: "cert-manager"
+  namespace: {{ inventory_hostname }}
   labels:
     app: webhook
     app.kubernetes.io/name: webhook
@@ -8314,7 +8312,7 @@ spec:
   versionPriority: 15
   service:
     name: cert-manager-webhook
-    namespace: "cert-manager"
+    namespace: {{ inventory_hostname }}
   version: v1beta1
 ---
 # Source: cert-manager/templates/webhook-mutating-webhook.yaml
@@ -8382,7 +8380,7 @@ webhooks:
       - key: "name"
         operator: "NotIn"
         values:
-        - cert-manager
+        - {{ inventory_hostname }}
     rules:
       - apiGroups:
           - "certmanager.k8s.io"
