@@ -1,6 +1,6 @@
 # Table of Contents
 
 - [Introduction](README.md)
-- Team Machines
 - Clusters
 - Workloads
+- [Team Machines](team-machines/README.md)
