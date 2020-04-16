@@ -1,5 +1,9 @@
 # Team Machines
 
+## TODO
+
+- [ ] Block all inbound traffic on public IP so that only members of ZeroTier network can reach machines
+
 ## Setup
 
 1. Generate and save a secure root password under the *Team Machines* collection at [bitwarden.phl.io](https://bitwarden.phl.io/)
