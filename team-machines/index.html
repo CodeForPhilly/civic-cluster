@@ -1,0 +1,372 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Team Machines · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="paws-data-pipeline.html" />
+    
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" >
+            
+                <span>
+            
+                    
+                    Clusters
+            
+                </span>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" >
+            
+                <span>
+            
+                    
+                    Workloads
+            
+                </span>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Team Machines
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="paws-data-pipeline.html">
+            
+                <a href="paws-data-pipeline.html">
+            
+                    
+                    paws-data-pipeline
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="plse.html">
+            
+                <a href="plse.html">
+            
+                    
+                    PLSE
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Team Machines</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="team-machines">Team Machines</h1>
+<h2 id="setup">Setup</h2>
+<ol>
+<li>Generate and save a secure root password under the <em>Team Machines</em> collection at <a href="https://bitwarden.phl.io/" target="_blank">bitwarden.phl.io</a></li>
+<li>Add a page to the <em>Team Machines</em> section of this book, documenting at least who the <em>Team Admin</em> is to start<ul>
+<li>The <em>Team Admin</em> should be a member of the team who is familiar with managing Linux systems and agrees to take responsibility for administering access for their teammates</li>
+</ul>
+</li>
+<li>Create a new Linode<ul>
+<li>Choose a Distribution: <strong>Ubuntu 18.04 LTS</strong></li>
+<li>Region: <strong>Newark, NJ</strong></li>
+<li>Linode Plan: <strong>Standard &gt; Linode 4GB</strong> (2 CPUs)</li>
+<li>Linode Label: <code>${team_name}.team-machine.phl.io</code></li>
+<li>Add Tags: <strong>team-machine</strong></li>
+<li>Root Password: <em>use password saved to BitWarden in step 1</em></li>
+<li>Backups: <strong>no</strong></li>
+<li>Private IP: <strong>no</strong></li>
+</ul>
+</li>
+<li>Add an <code>A</code> record to <a href="https://console.cloud.google.com/net-services/dns/zones/phl-io/rrsets/create?project=openphl-1177" target="_blank">the <code>phl.io</code> zone</a><ul>
+<li>DNS Name: <code>${team_name}.team-machine</code>.phl.io</li>
+<li>IPv4 Address: <em>copy from created Linode</em></li>
+</ul>
+</li>
+<li><p>Add public SSH keys for the <em>Team Admin</em></p>
+<pre><code class="lang-bash"> mkdir ~/.ssh
+ vim ~/.ssh/authorized_keys
+ chmod 600 ~/.ssh/authorized_keys
+</code></pre>
+</li>
+<li><p>Install Docker Engine from Docker&apos;s repository:</p>
+<pre><code class="lang-bash"> <span class="hljs-comment"># install prereqs for using repository</span>
+ apt-get install \
+     apt-transport-https \
+     ca-certificates \
+     curl \
+     gnupg-agent \
+     software-properties-common
+
+ <span class="hljs-comment"># add Docker&apos;s official GPG key</span>
+ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+ <span class="hljs-comment"># add stable repository</span>
+ add-apt-repository \
+     <span class="hljs-string">&quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+     <span class="hljs-variable">$(lsb_release -cs)</span> \
+     stable&quot;</span>
+
+ <span class="hljs-comment"># update package cache</span>
+ apt-get update
+
+ <span class="hljs-comment"># install Docker Engine</span>
+ apt-get install docker-ce docker-ce-cli containerd.io
+</code></pre>
+</li>
+<li><p>Install ZeroTier and join <code>code-for-philly</code> network:</p>
+<pre><code class="lang-bash"> curl <span class="hljs-_">-s</span> https://install.zerotier.com | bash
+
+ zerotier-cli join e5<span class="hljs-built_in">cd</span>7a9e1c5330df
+</code></pre>
+</li>
+<li><p><a href="https://my.zerotier.com/network/e5cd7a9e1c5330df" target="_blank">Authorize machine to connect to ZeroTier network</a> and label connection <code>${team_name}.team-machine.phl.io</code></p>
+</li>
+<li><p>Verify Docker installation and machine reachability by starting nginx &quot;hello world&quot; container:</p>
+<pre><code class="lang-bash"> docker run -p 80:80 <span class="hljs-_">-d</span> nginxdemos/hello
+</code></pre>
+</li>
+<li><p>Share <code>http://${team_name}.team-machine.phl.io/</code> link with <em>Team Admin</em>, showing nginx demo page and let them know they can destroy that container</p>
+</li>
+</ol>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                
+                <a href="paws-data-pipeline.html" class="navigation navigation-next navigation-unique" aria-label="Next page: paws-data-pipeline">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Team Machines","level":"1.4","depth":1,"next":{"title":"paws-data-pipeline","level":"1.4.1","depth":2,"path":"team-machines/paws-data-pipeline.md","ref":"team-machines/paws-data-pipeline.md","articles":[]},"previous":{"title":"Workloads","level":"1.3","depth":1,"ref":"","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["mermaid@git+https://github.com/JarvusInnovations/gitbook-plugin-mermaid.git"],"pluginsConfig":{"mermaid":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"team-machines/README.md","mtime":"2020-04-16T22:32:54.094Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-04-16T22:33:00.796Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-mermaid/mermaid/mermaid.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-mermaid/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
