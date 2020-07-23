@@ -39,7 +39,7 @@ metadata:
     app: {{ inventory_hostname }}
 type: Opaque
 stringData:
-  password: {{ lookup('password', '/dev/null length=12 chars=ascii_letters,digits,hexdigits,punctuation')  }}
+  password: '{{ lookup('password', '/dev/null length=12 chars=ascii_letters,digits,hexdigits,punctuation')|regex_replace("'", '"')  }}'
 
 ---
 
